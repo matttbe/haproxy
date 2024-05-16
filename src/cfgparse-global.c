@@ -1325,9 +1325,6 @@ int cfg_parse_global(const char *file, int linenum, char **args, int kwm)
 		if (alertif_too_many_args(0, file, linenum, args, &err_code))
 			goto out;
 #ifdef __linux__
-#ifndef IPPROTO_MPTCP
-#define IPPROTO_MPTCP 262
-#endif
 		proto_tcpv4.sock_prot = IPPROTO_MPTCP;
 		proto_tcpv6.sock_prot = IPPROTO_MPTCP;
 		proto_rhttp.sock_prot = IPPROTO_MPTCP;

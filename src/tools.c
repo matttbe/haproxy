@@ -972,6 +972,7 @@ struct sockaddr_storage *str2sa_range(const char *str, int *port, int *low, int 
 	int new_fd = -1;
 	enum proto_type proto_type = 0; // to shut gcc warning
 	int ctrl_type = 0; // to shut gcc warning
+	int mptcp = 0;
 
 	portl = porth = porta = 0;
 	if (fqdn)
@@ -1058,6 +1059,13 @@ struct sockaddr_storage *str2sa_range(const char *str, int *port, int *low, int 
 		proto_type = PROTO_TYPE_STREAM;
 		ctrl_type = SOCK_STREAM;
 	}
+	else if (strncmp(str2, "mptcp4@", 7) == 0) {
+		str2 += 7;
+		ss.ss_family = AF_INET;
+		proto_type = PROTO_TYPE_STREAM;
+		ctrl_type = SOCK_STREAM;
+		mptcp = 1;
+	}
 	else if (strncmp(str2, "udp4@", 5) == 0) {
 		str2 += 5;
 		ss.ss_family = AF_INET;
@@ -1070,6 +1078,13 @@ struct sockaddr_storage *str2sa_range(const char *str, int *port, int *low, int 
 		proto_type = PROTO_TYPE_STREAM;
 		ctrl_type = SOCK_STREAM;
 	}
+	else if (strncmp(str2, "mptcp6@", 7) == 0) {
+		str2 += 7;
+		ss.ss_family = AF_INET;
+		proto_type = PROTO_TYPE_STREAM;
+		ctrl_type = SOCK_STREAM;
+		mptcp = 1;
+	}
 	else if (strncmp(str2, "udp6@", 5) == 0) {
 		str2 += 5;
 		ss.ss_family = AF_INET6;
@@ -1081,6 +1096,13 @@ struct sockaddr_storage *str2sa_range(const char *str, int *port, int *low, int 
 		ss.ss_family = AF_UNSPEC;
 		proto_type = PROTO_TYPE_STREAM;
 		ctrl_type = SOCK_STREAM;
+	}
+	else if (strncmp(str2, "mptcp@", 6) == 0) {
+		str2 += 6;
+		ss.ss_family = AF_UNSPEC;
+		proto_type = PROTO_TYPE_STREAM;
+		ctrl_type = SOCK_STREAM;
+		mptcp = 1;
 	}
 	else if (strncmp(str2, "udp@", 4) == 0) {
 		str2 += 4;
@@ -1360,7 +1382,7 @@ struct sockaddr_storage *str2sa_range(const char *str, int *port, int *low, int 
 		 */
 		new_proto = protocol_lookup(ss.ss_family,
 					    proto_type,
-					    ctrl_type == SOCK_DGRAM);
+					    ctrl_type == SOCK_DGRAM || !!mptcp);
 
 		if (!new_proto && (!fqdn || !*fqdn) && (ss.ss_family != AF_CUST_EXISTING_FD)) {
 			memprintf(err, "unsupported %s protocol for %s family %d address '%s'%s",
