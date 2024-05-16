@@ -77,6 +77,7 @@
 #include <haproxy/peers.h>
 #include <haproxy/pool.h>
 #include <haproxy/protocol.h>
+#include <haproxy/proto_tcp.h>
 #include <haproxy/proxy.h>
 #include <haproxy/resolvers.h>
 #include <haproxy/sample.h>
@@ -1193,7 +1194,7 @@ int cfg_parse_mailers(const char *file, int linenum, char **args, int kwm)
 			goto out;
 		}
 
-		if (proto->sock_prot != IPPROTO_TCP) {
+		if (proto->sock_prot != proto_tcpv4.sock_prot) {
 			ha_alert("parsing [%s:%d] : '%s %s' : TCP not supported for this address family.\n",
 				 file, linenum, args[0], args[1]);
 			err_code |= ERR_ALERT | ERR_FATAL;

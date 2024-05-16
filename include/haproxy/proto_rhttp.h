@@ -5,6 +5,8 @@
 #include <haproxy/listener-t.h>
 #include <haproxy/receiver-t.h>
 
+extern struct protocol proto_rhttp;
+
 int rhttp_bind_receiver(struct receiver *rx, char **errmsg);
 
 int rhttp_bind_listener(struct listener *listener, char *errmsg, int errlen);
