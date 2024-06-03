@@ -317,6 +317,11 @@ typedef struct { } empty_t;
 #define queue _queue
 #endif
 
+/* only Linux defines IPPROTO_MPTCP */
+#ifndef IPPROTO_MPTCP
+#define IPPROTO_MPTCP 262
+#endif
+
 #endif /* _HAPROXY_COMPAT_H */
 
 /*
