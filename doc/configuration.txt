@@ -1442,6 +1442,7 @@ The following keywords are supported in the "global" section :
    - maxsslconn
    - maxsslrate
    - maxzlibmem
+   - mptcp
    - no-memory-trimming
    - noepoll
    - noevports
@@ -3170,6 +3171,14 @@ maxzlibmem <number>
   The default value is 0. The value is available in bytes on the UNIX socket
   with "show info" on the line "MaxZlibMemUsage", the memory used by zlib is
   "ZlibMemUsage" in bytes.
+
+mptcp
+  Uses MPTCP instead of TCP. Multipath TCP or MPTCP is an extension to the
+  standard TCP and is described in RFC 8684. It allows a device to make use of
+  multiple interfaces at once to send and receive TCP packets over a single
+  MPTCP connection. MPTCP can aggregate the bandwidth of multiple interfaces or
+  prefer the one with the lowest latency, it also allows a fail-over if one path
+  is down, and the traffic is seamlessly reinjected on other paths.
 
 no-memory-trimming
   Disables memory trimming ("malloc_trim") at a few moments where attempts are
@@ -28204,6 +28213,27 @@ report this to the maintainers.
                                  statement using this address, a port or port
                                  range can or must be specified.
                                  It is considered as an alias of 'stream+ipv4@'.
+
+'mptcp@<address>[:port1[-port2]]' following <address> is considered as an IPv4
+                                  or IPv6 address depending of the syntax but
+                                  socket type and transport method is forced to
+                                  "stream", with the MPTCP protocol. Depending
+                                  on the statement using this address, a port or
+                                  a port range can or must be specified.
+
+'mptcp4@<address>[:port1[-port2]]' following <address> is always considered as
+                                   an IPv4 address but socket type and transport
+                                   method is forced to "stream", with the MPTCP
+                                   protocol. Depending on the statement using
+                                   this address, a port or port range can or
+                                   must be specified.
+
+'mptcp6@<address>[:port1[-port2]]' following <address> is always considered as
+                                   an IPv6 address but socket type and transport
+                                   method is forced to "stream", with the MPTCP
+                                   protocol. Depending on the statement using
+                                   this address, a port or port range can or
+                                   must be specified.
 
 'udp@<address>[:port1[-port2]]' following <address> is considered as an IPv4
                                 or IPv6 address depending of the syntax but

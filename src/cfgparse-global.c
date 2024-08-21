@@ -23,6 +23,8 @@
 #include <haproxy/log.h>
 #include <haproxy/peers.h>
 #include <haproxy/protocol.h>
+#include <haproxy/proto_rhttp.h>
+#include <haproxy/proto_tcp.h>
 #include <haproxy/tools.h>
 
 int cluster_secret_isset;
@@ -51,7 +53,7 @@ static const char *common_kw_list[] = {
 	"presetenv", "unsetenv", "resetenv", "strict-limits", "localpeer",
 	"numa-cpu-mapping", "defaults", "listen", "frontend", "backend",
 	"peers", "resolvers", "cluster-secret", "no-quic", "limited-quic",
-	"stats-file",
+	"stats-file", "mptcp",
 	NULL /* must be last */
 };
 
@@ -1269,6 +1271,20 @@ int cfg_parse_global(const char *file, int linenum, char **args, int kwm)
 
 			HA_ATOMIC_STORE(&global.anon_key, tmp);
 		}
+	}
+	else if (strcmp(args[0], "mptcp") == 0) {
+		if (alertif_too_many_args(0, file, linenum, args, &err_code))
+			goto out;
+#ifdef __linux__
+		proto_tcpv4.sock_prot = IPPROTO_MPTCP;
+		proto_tcpv6.sock_prot = IPPROTO_MPTCP;
+		proto_rhttp.sock_prot = IPPROTO_MPTCP;
+#else
+		ha_alert("parsing [%s:%d]: '%s' is only supported on Linux.\n",
+			 file, linenum, args[0]);
+		err_code |= ERR_ALERT | ERR_FATAL;
+		goto out;
+#endif
 	}
 	else {
 		struct cfg_kw_list *kwl;
